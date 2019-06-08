@@ -7,7 +7,9 @@ import (
 
 var corpus []byte
 
-// GenerateChainFrom return a random subset of the corpus
+//
+// GenerateChain will return a random piece of the Declaration of the Independence
+//
 func GenerateChain() []byte {
 	if corpus == nil {
 		corpus, _ = ioutil.ReadFile("corpus.txt")
