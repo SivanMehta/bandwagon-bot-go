@@ -7,6 +7,10 @@ import (
   "os"
 )
 
+func generate () string {
+	return "what up dude\n"
+}
+
 func main() {
   port := os.Getenv("PORT")
   if port == "" {
@@ -27,6 +31,10 @@ func main() {
       log.Printf("Serving %s to %s...\n", indexPage, r.RemoteAddr)
       http.ServeFile(w, r, indexPage)
     }
+  })
+
+  http.HandleFunc("/sentence", func(w http.ResponseWriter, r *http.Request) {
+    w.Write([]byte(generate()))
   })
 
   http.HandleFunc("/scheduled", func(w http.ResponseWriter, r *http.Request){
