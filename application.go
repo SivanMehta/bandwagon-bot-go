@@ -1,14 +1,19 @@
 package main
 
 import (
-  "io/ioutil"
-  "log"
+  "fmt"
   "net/http"
   "os"
+  "math/rand"
+  "io/ioutil"
 )
 
-func generate () string {
-	return "what up dude\n"
+func generateChainFrom (text []byte) []byte {
+  // we will randomly slice this later
+
+  start := rand.Intn(len(text))
+  end := start + rand.Intn(len(text) - start)
+	return text[start:end]
 }
 
 func main() {
@@ -17,32 +22,18 @@ func main() {
     port = "5000"
   }
 
-  f, _ := os.Create("/var/log/golang/golang-server.log")
-  defer f.Close()
-  log.SetOutput(f)
+  // would normally be pulled form twitter
+  corpus, _ := ioutil.ReadFile("corpus.txt")
 
   const indexPage = "public/index.html"
   http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    if r.Method == "POST" {
-      if buf, err := ioutil.ReadAll(r.Body); err == nil {
-        log.Printf("Received message: %s\n", string(buf))
-      }
-    } else {
-      log.Printf("Serving %s to %s...\n", indexPage, r.RemoteAddr)
-      http.ServeFile(w, r, indexPage)
-    }
+    http.ServeFile(w, r, indexPage)
   })
 
   http.HandleFunc("/sentence", func(w http.ResponseWriter, r *http.Request) {
-    w.Write([]byte(generate()))
+    w.Write(generateChainFrom(corpus))
   })
 
-  http.HandleFunc("/scheduled", func(w http.ResponseWriter, r *http.Request){
-    if r.Method == "POST" {
-      log.Printf("Received task %s scheduled at %s\n", r.Header.Get("X-Aws-Sqsd-Taskname"), r.Header.Get("X-Aws-Sqsd-Scheduled-At"))
-    }
-  })
-
-  log.Printf("Listening on port %s\n\n", port)
+  fmt.Printf("Listening on port %s\n\n", port)
   http.ListenAndServe(":" + port, nil)
 }
