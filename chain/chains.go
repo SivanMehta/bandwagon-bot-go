@@ -12,8 +12,22 @@ type bandwagons map[string]bandwagon
 var currentBandwagons bandwagons
 var upcomingBandwagons bandwagons
 
+// character limit for tweets
+const limit = 240
+
 func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
   fmt.Println("Generating Markov chain for", trend)
+
+  tweets := getTweets(trend)
+  dictionary := buildDictionary(tweets)
+  starters := findStarters(tweets)
+
+  go func() chain {
+    return dictionary
+  }()
+  
+  fmt.Println(starters)
+  
 
   // Gather tweets from a given trend
   // Build an n-gram dictionary from the tweets
