@@ -3,6 +3,8 @@ package chain
 import (
   "fmt"
   "sync"
+  "math/rand"
+  "strings"
 )
 
 type bandwagon func() string
@@ -15,26 +17,47 @@ var upcomingBandwagons bandwagons
 // character limit for tweets
 const limit = 240
 
+func selectFrom(choices []string) string {
+  if len(choices) == 0 {
+    return "-----debug------"
+  }
+  return choices[rand.Intn(len(choices))]
+}
+
 func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
   fmt.Println("Generating Markov chain for", trend)
 
   tweets := getTweets(trend)
   dictionary := buildDictionary(tweets)
   starters := findStarters(tweets)
-
-  go func() []string {
-    return starters
-  }()
-  
-  fmt.Println(dictionary)
   
   // Gather tweets from a given trend
   // Build an n-gram dictionary from the tweets
   // Generate a function that uses that dictionary to return a tweet
   // (THIS IS THE HARD PART)
   *pointer = func() string {
+    starter := selectFrom(starters)
+    tweet := []string{starter}
+    length := len(starter)
+    current := starter
 
-    return "Warriors fan since 2015"
+    for true {
+      candidates := dictionary[current]
+      choice := selectFrom(candidates)
+
+      if len(choice) + length > 240 {
+        break
+      }
+
+      tweet = append(tweet, " " + choice)
+      length += len(choice)
+      current = choice
+    }
+
+    composedTweet := join(tweet...)
+    composedTweet = strings.Replace(composedTweet, "-----debug------", "", -1)
+
+    return composedTweet + "\n"
   }
 
   pool.Done() // decrement the counter
