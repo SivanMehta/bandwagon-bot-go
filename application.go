@@ -25,10 +25,8 @@ func main() {
     http.ServeFile(w, r, indexPage)
   })
 
-  // will be parameterized in the future
   http.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
     trend := strings.Replace(r.URL.String(), "/api/", "", -1)
-    fmt.Println(trend)
     tweet := chain.TweetFromTrend(trend)
     w.Write([]byte(tweet))
   })
@@ -42,6 +40,6 @@ func main() {
     }
   }()
 
-  fmt.Printf("Listening on port %s\n\n", port)
+  fmt.Printf("Listening on port %s\n", port)
   http.ListenAndServe(":" + port, nil)
 }

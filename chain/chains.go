@@ -56,7 +56,7 @@ func join(strs ...string) string {
 //
 func TweetFromTrend(trend string) string {
   if generator, ok := currentBandwagons[trend]; ok {
-    return generator()
+    return join(generator(), "\n")
   }
-  return join(trend, " is a not a currently available bandwagon")
+  return join("\"",trend, "\" is a not a currently available bandwagon\n")
 }
