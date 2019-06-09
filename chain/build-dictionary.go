@@ -27,11 +27,11 @@ func chainFromTweet(tweet string, pointer *chain, pool *sync.WaitGroup) {
 // given a list of tweets, generate a dictionary
 func buildDictionary(tweets []string) chain {
 	var pool sync.WaitGroup
-	chains := make([]chain, len(tweets))
+	tweetChains := make([]chain, len(tweets))
 
 	for i, tweet := range tweets {
 		pool.Add(1)
-		go chainFromTweet(tweet, &chains[i], &pool)
+		go chainFromTweet(tweet, &tweetChains[i], &pool)
 	}
 	pool.Wait()
 
@@ -40,7 +40,18 @@ func buildDictionary(tweets []string) chain {
 	// combine instead of doing it all at once because we don't want to
 	// erronously generate a chain from tweets that happen to be adjacent
 
-	return chains[0]
+	markovChain := make(chain)
+	for _, tweetChain := range tweetChains {
+		for key := range tweetChain {
+			if arr, ok := markovChain[key]; ok {
+				markovChain[key] = append(arr, tweetChain[key]...)
+			} else {
+				markovChain[key] = tweetChain[key]
+			}
+		}	
+	}
+
+	return markovChain
 }
 
 // Use the first word of each tweet as a baseline starter

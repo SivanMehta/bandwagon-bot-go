@@ -22,19 +22,19 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
   dictionary := buildDictionary(tweets)
   starters := findStarters(tweets)
 
-  go func() chain {
-    return dictionary
+  go func() []string {
+    return starters
   }()
   
-  fmt.Println(starters)
+  fmt.Println(dictionary)
   
-
   // Gather tweets from a given trend
   // Build an n-gram dictionary from the tweets
   // Generate a function that uses that dictionary to return a tweet
   // (THIS IS THE HARD PART)
   *pointer = func() string {
-    return "Lifelong Warriors fan since 2015"
+
+    return "Warriors fan since 2015"
   }
 
   pool.Done() // decrement the counter
