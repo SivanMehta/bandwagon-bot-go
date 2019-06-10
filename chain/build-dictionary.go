@@ -1,22 +1,26 @@
 package chain
 
 import (
-	"sync"
 	"strings"
+	"sync"
 )
 
-// we're hard-coding order of 1 markov chains here
-type chain map[string][]string
+// we're hard-coding order of 2 markov chains here
+type bigram struct {
+	First, Second string
+}
+type chain map[bigram][]string
 
 func chainFromTweet(tweet string, pointer *chain, pool *sync.WaitGroup) {
 	tokens := strings.Split(tweet, " ")
 	tweetChain := make(chain)
 
-	for i := 1; i < len(tokens); i ++ {
-		if arr, ok := tweetChain[tokens[i - 1]]; ok {
-			tweetChain[tokens[i - 1]] = append(arr, tokens[i])
+	for i := 2; i < len(tokens); i++ {
+		key := bigram{tokens[i-2], tokens[i-1]}
+		if arr, ok := tweetChain[key]; ok {
+			tweetChain[key] = append(arr, tokens[i])
 		} else {
-			tweetChain[tokens[i - 1]] = []string{tokens[i]}
+			tweetChain[key] = []string{tokens[i]}
 		}
 	}
 
@@ -48,18 +52,24 @@ func buildDictionary(tweets []string) chain {
 			} else {
 				markovChain[key] = tweetChain[key]
 			}
-		}	
+		}
 	}
 
 	return markovChain
 }
 
-// Use the first word of each tweet as a baseline starter
-func findStarters(tweets []string) []string {
-	starters := []string{}
+// Use the pair of words at the beginning of each tweet as a set of
+// potentional starters
+func findStarters(tweets []string) []bigram {
+	starters := []bigram{}
 
-	for _, tweet := range(tweets) {
-		starters = append(starters, strings.Split(tweet, " ")[0])
+	for _, tweet := range tweets {
+		words := strings.Split(tweet, " ")
+
+		if len(words) > 2 {
+			pair := bigram{words[0], words[1]}
+			starters = append(starters, pair)
+		}
 	}
 
 	return starters
