@@ -1,8 +1,8 @@
 package chain
 
 import (
-	"sync"
 	"strings"
+	"sync"
 )
 
 // we're hard-coding order of 1 markov chains here
@@ -12,11 +12,11 @@ func chainFromTweet(tweet string, pointer *chain, pool *sync.WaitGroup) {
 	tokens := strings.Split(tweet, " ")
 	tweetChain := make(chain)
 
-	for i := 1; i < len(tokens); i ++ {
-		if arr, ok := tweetChain[tokens[i - 1]]; ok {
-			tweetChain[tokens[i - 1]] = append(arr, tokens[i])
+	for i := 1; i < len(tokens); i++ {
+		if arr, ok := tweetChain[tokens[i-1]]; ok {
+			tweetChain[tokens[i-1]] = append(arr, tokens[i])
 		} else {
-			tweetChain[tokens[i - 1]] = []string{tokens[i]}
+			tweetChain[tokens[i-1]] = []string{tokens[i]}
 		}
 	}
 
@@ -48,7 +48,7 @@ func buildDictionary(tweets []string) chain {
 			} else {
 				markovChain[key] = tweetChain[key]
 			}
-		}	
+		}
 	}
 
 	return markovChain
@@ -58,7 +58,7 @@ func buildDictionary(tweets []string) chain {
 func findStarters(tweets []string) []string {
 	starters := []string{}
 
-	for _, tweet := range(tweets) {
+	for _, tweet := range tweets {
 		starters = append(starters, strings.Split(tweet, " ")[0])
 	}
 
