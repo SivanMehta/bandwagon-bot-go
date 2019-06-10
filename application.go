@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"./chain"
+	"./twitter"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 		port = "5000"
 	}
 
-	//
+	// fetch the access token from the API so we can make authenticated requests
 	twitter.GenerateAccessToken()
 
 	// make a chain before setting the routes
