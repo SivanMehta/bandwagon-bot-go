@@ -27,9 +27,9 @@ func selectFrom(choices []string) string {
 	return choices[rand.Intn(len(choices))]
 }
 
-func selectStarter(starters [][]string) []string {
+func selectStarter(starters []bigram) bigram {
 	if len(starters) == 0 {
-		return []string{debug}
+		return bigram{debug, debug}
 	}
 	return starters[rand.Intn(len(starters))]
 }
@@ -46,12 +46,12 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 	// Generate a function that uses that dictionary to return a tweet
 	*pointer = func() string {
 		startingPair := selectStarter(startingPairs)
-		tweet := []string{startingPair[0] + " ", startingPair[1]}
+		tweet := []string{startingPair.First + " ", startingPair.Second}
 		length := len(tweet[0]) + len(tweet[1])
-		current := tweet[1]
+		currentKey := startingPair
 
 		for true {
-			if candidates, ok := dictionary[current]; ok {
+			if candidates, ok := dictionary[currentKey]; ok {
 				choice := selectFrom(candidates)
 
 				if len(choice)+length > limit {
@@ -61,9 +61,10 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 
 				tweet = append(tweet, " "+choice)
 				length += len(choice)
-				current = choice
+				currentKey = bigram{currentKey.Second, choice}
 			} else {
-				// we have reached a n-gram that has never been followed before
+				// we have reached a n-gram that has never been followed before, so
+				// we just follow past advice and just stop here
 				break
 			}
 		}
