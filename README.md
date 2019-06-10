@@ -11,3 +11,23 @@ This is a bot that hops on bandwagons and pretends to be a real fan.
 - [x] Generate a markov chain for each trending topic using the tweets as a corpus
 - [x] Expose a function on `/api/:topic` that allows you to play with each chain
 - [ ] Create a tweet for each trending topic and post it to Twitter
+
+# Deployment
+
+- [x] Make zip file
+
+```
+make application.zip
+```
+
+- [ ] Set environment variables
+
+```
+make environment
+```
+
+- [ ] update [Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/) to talk to your application
+
+```
+make deployment
+```
