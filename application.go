@@ -16,6 +16,9 @@ func main() {
 		port = "5000"
 	}
 
+	//
+	twitter.GenerateAccessToken()
+
 	// make a chain before setting the routes
 	// so that they're available on server start
 	chain.MakeChains()
@@ -27,7 +30,7 @@ func main() {
 
 	http.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		trend := strings.Replace(r.URL.String(), "/api/", "", -1)
-		tweet := chain.TweetFromTrend(trend)
+		tweet := chain.FromTrend(trend)
 		w.Write([]byte(tweet))
 	})
 
@@ -35,7 +38,7 @@ func main() {
 	// to update what bandwagon we're hopping on.
 	go func() {
 		for true {
-			time.Sleep(time.Second * 5)
+			time.Sleep(time.Hour)
 			chain.MakeChains()
 		}
 	}()
