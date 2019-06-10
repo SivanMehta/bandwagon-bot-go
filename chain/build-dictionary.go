@@ -54,13 +54,16 @@ func buildDictionary(tweets []string) chain {
 	return markovChain
 }
 
-// Use the first word of each tweet as a baseline starter
-func findWordsAtIndex(tweets []string, idx int) []string {
-	starters := []string{}
+// Use the pair of words at the beginning of each tweet as a set of
+// potentional starters
+func findStarters(tweets []string) [][]string {
+	starters := [][]string{}
 
 	for _, tweet := range tweets {
-		if len(tweet) > 3 {
-			starters = append(starters, strings.Split(tweet, " ")[idx])
+		words := strings.Split(tweet, " ")
+
+		if len(words) > 2 {
+			starters = append(starters, words[:2])
 		}
 	}
 

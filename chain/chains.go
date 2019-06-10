@@ -18,12 +18,20 @@ var upcomingBandwagons bandwagons
 
 // character limit for tweets
 const limit = 240
+const debug = "-----debug------"
 
 func selectFrom(choices []string) string {
 	if len(choices) == 0 {
-		return "-----debug------"
+		return debug
 	}
 	return choices[rand.Intn(len(choices))]
+}
+
+func selectStarter(starters [][]string) []string {
+	if len(starters) == 0 {
+		return []string{debug}
+	}
+	return starters[rand.Intn(len(starters))]
 }
 
 func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
@@ -31,19 +39,16 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 
 	tweets := getTweets(trend)
 	dictionary := buildDictionary(tweets)
-	starters := findWordsAtIndex(tweets, 0)
-	followers := findWordsAtIndex(tweets, 1)
+	startingPairs := findStarters(tweets)
 
 	// Gather tweets from a given trend
 	// Build an n-gram dictionary from the tweets
 	// Generate a function that uses that dictionary to return a tweet
-	// (THIS IS THE HARD PART)
 	*pointer = func() string {
-		starter := selectFrom(starters)
-		follower := selectFrom(followers)
-		tweet := []string{starter, " " + follower}
-		length := len(starter)
-		current := starter
+		startingPair := selectStarter(startingPairs)
+		tweet := []string{startingPair[0] + " ", startingPair[1]}
+		length := len(tweet[0]) + len(tweet[1])
+		current := tweet[1]
 
 		for true {
 			if candidates, ok := dictionary[current]; ok {
@@ -64,7 +69,7 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 		}
 
 		composedTweet := join(tweet...)
-		composedTweet = strings.Replace(composedTweet, "-----debug------", "", -1)
+		composedTweet = strings.Replace(composedTweet, debug, "", -1)
 
 		return composedTweet + "\n"
 	}
