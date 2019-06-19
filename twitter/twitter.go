@@ -2,9 +2,7 @@ package twitter
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/url"
-	"strings"
 )
 
 // TBD: getting actual tweets from Twitter
@@ -22,12 +20,17 @@ func GetTweets(trend string) []string {
 	// exactly containing the trend, without tweets that contain links
 	query := "\"" + trend + "\" -filter:links"
 	query = url.QueryEscape(query)
-	// responseString := makeAuthedRequest("GET", "1.1/search/tweets.json?q="+query+"&include_entities=false&lang=en&result_type=popular")
-	// fmt.Println(string(responseString))
+	responseBytes := makeAuthedRequest("GET", "1.1/search/tweets.json?q="+query+"&include_entities=false&lang=en&result_type=popular")
 
-	totallyTweets, _ := ioutil.ReadFile("corpus.txt")
+	var parsed tweetsResponse
+	json.Unmarshal(responseBytes, &parsed)
+	data := parsed.Statuses
+	tweets := make([]string, len(data))
 
-	tweets := strings.Split(string(totallyTweets), ".")
+	for i := range data {
+		tweets[i] = data[i].Text
+	}
+
 	return tweets
 }
 

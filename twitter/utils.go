@@ -9,3 +9,11 @@ type trendWrapper struct {
 }
 
 type trendResponse []trendWrapper
+
+type tweet struct {
+	Text string
+}
+
+type tweetsResponse struct {
+	Statuses []tweet
+}
