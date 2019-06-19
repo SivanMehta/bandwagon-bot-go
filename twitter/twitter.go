@@ -3,14 +3,12 @@ package twitter
 import (
 	"encoding/json"
 	"net/url"
+	"sort"
 )
 
-// TBD: getting actual tweets from Twitter
 var accessToken = ""
 var token = ""
 var secret = ""
-
-const apiBase = "https://api.twitter.com/"
 
 //
 // GetTweets will return a body of text from trending topics
@@ -35,7 +33,7 @@ func GetTweets(trend string) []string {
 }
 
 //
-// GetTrends goes to twitter and returns a list of trending topics
+// GetTrends goes to twitter and returns a list of the top 5 trending topics
 // the woeid of 2352824 hard codes this to the US
 //
 func GetTrends() []string {
@@ -45,9 +43,15 @@ func GetTrends() []string {
 	json.Unmarshal(responseBytes, &parsed)
 
 	data := parsed[0].Trends
-	trends := make([]string, len(data))
+	sort.Slice(data, func(i, j int) bool {
+		return data[i].Tweet_volume > data[j].Tweet_volume
+	})
 
-	for i := range data {
+	// only take the top 5 trends so we can stay relevant
+	n := 5
+	trends := make([]string, n)
+
+	for i := 0; i < n; i++ {
 		trends[i] = data[i].Name
 	}
 
