@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -31,7 +32,8 @@ func main() {
 
 	http.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		trend := strings.Replace(r.URL.String(), "/api/", "", -1)
-		tweet := chain.FromTrend(trend)
+		parsedTrend, _ := url.PathUnescape(trend)
+		tweet := chain.FromTrend(parsedTrend)
 		w.Write([]byte(tweet))
 	})
 
