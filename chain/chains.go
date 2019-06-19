@@ -2,42 +2,16 @@ package chain
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 	"sync"
+
+	"../twitter"
 )
-
-type bandwagon func() string
-
-// Key: Trending Topic on Twitter
-// Value: Function that generates a tweet from the keyed topic
-type bandwagons map[string]bandwagon
-
-var currentBandwagons bandwagons
-var upcomingBandwagons bandwagons
-
-// character limit for tweets
-const limit = 240
-const debug = "-----debug------"
-
-func selectFrom(choices []string) string {
-	if len(choices) == 0 {
-		return debug
-	}
-	return choices[rand.Intn(len(choices))]
-}
-
-func selectStarter(starters []bigram) bigram {
-	if len(starters) == 0 {
-		return bigram{debug, debug}
-	}
-	return starters[rand.Intn(len(starters))]
-}
 
 func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 	fmt.Println("Generating Markov chain for", trend)
 
-	tweets := getTweets(trend)
+	tweets := twitter.GetTweets(trend)
 	dictionary := buildDictionary(tweets)
 	startingPairs := findStarters(tweets)
 
@@ -72,11 +46,14 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 		composedTweet := join(tweet...)
 		composedTweet = strings.Replace(composedTweet, debug, "", -1)
 
-		return composedTweet + "\n"
+		return composedTweet
 	}
 
 	pool.Done() // decrement the counter
 }
+
+var currentBandwagons bandwagons
+var upcomingBandwagons bandwagons
 
 //
 // MakeChains will be run on an interval to generate chain from a given set of tweets
@@ -84,7 +61,7 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 func MakeChains() {
 	// allocate a map for the new trends
 	upcomingBandwagons = make(bandwagons)
-	trends := getTrends()
+	trends := twitter.GetTrends()
 
 	// a pool so that we can generate the bandwagons in parallel
 	var pool sync.WaitGroup
@@ -103,4 +80,14 @@ func MakeChains() {
 
 	// reset what bandwagon we're currently on
 	currentBandwagons = upcomingBandwagons
+}
+
+//
+// FromTrend will try and generate a tweet from the given trend
+//
+func FromTrend(trend string) string {
+	if generator, ok := currentBandwagons[trend]; ok {
+		return join(generator(), "\n")
+	}
+	return join("\"", trend, "\" is a not a currently available bandwagon\n")
 }

@@ -14,20 +14,27 @@ This is a bot that hops on bandwagons and pretends to be a real fan.
 
 # Deployment
 
-- [x] Make zip file
+- [ ] Deploy to [Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/) with
+[`eb deploy`]
 
 ```
-make application.zip
+$ eb deploy
+2019-06-18 21:05:22    INFO: Environment update is starting.
+2019-06-18 21:05:27    INFO: Deploying new version to instance(s).
+2019-06-18 21:05:53    INFO: New application version was deployed to running EC2 instances.
+2019-06-18 21:05:53    INFO: Environment update completed successfully.
 ```
 
-- [ ] Set environment variables
+- [ ] Set environment variables with [`eb setenv`]
 
 ```
-make environment
+$ eb setenv KEY=TWITTER_CONSUMER_KEY SECRET=TWITTER_CONSUMER_SECRET_KEY
+2019-06-19 21:05:25    INFO: Environment update is starting.
+2019-06-19 21:05:29    INFO: Updating environment tmp-dev's configuration settings.
+2019-06-19 21:06:50    INFO: Successfully deployed new configuration to environment.
+2019-06-19 21:06:51    INFO: Environment update completed successfully.
 ```
 
-- [ ] update [Elastic Beanstalk](https://aws.amazon.com/elasticbeanstalk/) to talk to your application
 
-```
-make deployment
-```
+[`eb setenv`]: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-setenv.html
+[`eb deploy`]: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-deploy.html
