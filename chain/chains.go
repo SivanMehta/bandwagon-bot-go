@@ -56,14 +56,13 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 }
 
 var currentBandwagons bandwagons
-var upcomingBandwagons bandwagons
 
 //
 // MakeChains will be run on an interval to generate chain from a given set of tweets
 //
 func MakeChains() {
 	// allocate a map for the new trends
-	upcomingBandwagons = make(bandwagons)
+	upcomingBandwagons := make(bandwagons)
 	trends := twitter.GetTrends()
 
 	// a pool so that we can generate the bandwagons in parallel
