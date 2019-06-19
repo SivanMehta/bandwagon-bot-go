@@ -9,6 +9,7 @@ import (
 var accessToken = ""
 var token = ""
 var secret = ""
+var currentTrends []string
 
 //
 // GetTweets will return a body of text from trending topics
@@ -33,10 +34,10 @@ func GetTweets(trend string) []string {
 }
 
 //
-// GetTrends goes to twitter and returns a list of the top 5 trending topics
+// FetchTrends goes to twitter and returns a list of the top 5 trending topics
 // the woeid of 2352824 hard codes this to the US
 //
-func GetTrends() []string {
+func FetchTrends() []string {
 	responseBytes := makeAuthedRequest("GET", "1.1/trends/place.json?id=2352824")
 
 	var parsed trendResponse
@@ -55,5 +56,13 @@ func GetTrends() []string {
 		trends[i] = data[i].Name
 	}
 
+	currentTrends = trends
 	return trends
+}
+
+//
+// GetTrends simply returns whatever is trending right now
+//
+func GetTrends() []string {
+	return currentTrends
 }

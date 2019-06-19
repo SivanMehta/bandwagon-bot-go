@@ -1,9 +1,37 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-  <title>Why are you even here</title>
-</head>
-<body>
-  <h1>This an application</h1>
-</body>
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body>
+    <br />
+    <div class="container">
+      <h3>Trending Topics:</h3>
+      {{range .Trends}}
+        <button class="btn btn-primary" onclick="fetchTweet({{ . }})">
+          {{ . }}
+        </button>
+      {{end}}
+
+      <hr />
+      <div id="tweetContainer" class="alert alert-primary">
+        Click on a topic above to generate a tweet about it.
+      </div>
+      <a href="https://twitter.com/BandwagonBot?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">
+         Follow @BandwagonBot
+      </a>
+      <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    </div>
+
+    <script>
+      function fetchTweet(topic) {
+        fetch('/api/' + topic)
+          .then(res => res.text())
+          .then(tweet => {
+            // remove the tweet heading that is only used on Twitter itself
+            const content = tweet.split(':').slice(1).join('');
+            tweetContainer.innerHTML = content;
+          });
+      }
+    </script>
+  </body>
 </html>

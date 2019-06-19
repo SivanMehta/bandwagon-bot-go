@@ -63,7 +63,7 @@ var currentBandwagons bandwagons
 func MakeChains() {
 	// allocate a map for the new trends
 	upcomingBandwagons := make(bandwagons)
-	trends := twitter.GetTrends()
+	trends := twitter.FetchTrends()
 
 	// a pool so that we can generate the bandwagons in parallel
 	var pool sync.WaitGroup
