@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"net/url"
 	"os"
@@ -11,6 +12,10 @@ import (
 	"./chain"
 	"./twitter"
 )
+
+type HomePage struct {
+	Trends []string
+}
 
 func main() {
 	port := os.Getenv("PORT")
@@ -25,9 +30,10 @@ func main() {
 	// so that they're available on server start
 	chain.MakeChains()
 
-	const indexPage = "public/index.html"
+	tmpl := template.Must(template.ParseFiles("public/index.html"))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, indexPage)
+		data := HomePage{twitter.GetTrends()}
+		tmpl.Execute(w, data)
 	})
 
 	http.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {

@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+const apiBase = "https://api.twitter.com/"
+
 // make an authed request to the twitter API
 func makeAuthedRequest(method string, url string) []byte {
 	body := []byte("")

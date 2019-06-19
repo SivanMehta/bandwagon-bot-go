@@ -1,7 +1,8 @@
 package twitter
 
 type trend struct {
-	Name string
+	Name         string
+	Tweet_volume int
 }
 
 type trendWrapper struct {
