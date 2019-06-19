@@ -9,8 +9,6 @@ import (
 )
 
 func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
-	fmt.Println("Generating Markov chain for", trend)
-
 	tweets := twitter.GetTweets(trend)
 	dictionary := buildDictionary(tweets)
 	startingPairs := findStarters(tweets)
@@ -22,6 +20,8 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 		startingPair := selectStarter(startingPairs)
 		tweet := []string{startingPair.First + " ", startingPair.Second}
 		length := len(tweet[0]) + len(tweet[1])
+		// character limit  - length of trend - colon -  newline
+		limit := 240 - len(trend) - 2
 		currentKey := startingPair
 
 		for true {
@@ -46,9 +46,12 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 		composedTweet := join(tweet...)
 		composedTweet = strings.Replace(composedTweet, debug, "", -1)
 
+		composedTweet = trend + ":\n\n" + composedTweet
+
 		return composedTweet
 	}
 
+	fmt.Println("Generated Markov chain for", trend)
 	pool.Done() // decrement the counter
 }
 
@@ -80,6 +83,8 @@ func MakeChains() {
 
 	// reset what bandwagon we're currently on
 	currentBandwagons = upcomingBandwagons
+
+	// post a tweet for each trend
 }
 
 //

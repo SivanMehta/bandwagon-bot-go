@@ -18,7 +18,7 @@ const apiBase = "https://api.twitter.com/"
 //
 func GetTweets(trend string) []string {
 	// exactly containing the trend, without tweets that contain links
-	query := "\"" + trend + "\" -filter:links"
+	query := trend + " -filter:links"
 	query = url.QueryEscape(query)
 	responseBytes := makeAuthedRequest("GET", "1.1/search/tweets.json?q="+query+"&include_entities=false&lang=en&result_type=popular")
 

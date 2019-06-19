@@ -14,9 +14,6 @@ type chain map[bigram][]string
 type bandwagon func() string
 type bandwagons map[string]bandwagon
 
-// character limit for tweets
-const limit = 240
-
 // this is a uuid that is very unlikely to ever be tweeted
 const debug = "d99c23df-cc98-4660-9b8c-0dede4741c79"
 
