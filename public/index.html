@@ -24,7 +24,7 @@
 
     <script>
       function fetchTweet(topic) {
-        fetch('/api/' + topic)
+        fetch('/api/' + encodeURIComponent(topic))
           .then(res => res.text())
           .then(tweet => {
             tweetContainer.innerHTML = tweet;
