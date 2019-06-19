@@ -3,6 +3,7 @@ package twitter
 import (
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"strings"
 )
 
@@ -18,6 +19,13 @@ const apiBase = "https://api.twitter.com/"
 // This is currently just the text of the Declaration of Independence, but stay tuned.
 //
 func GetTweets(trend string) []string {
+	// exactly containing the trend, without tweets that contain links
+	query := "\"" + trend + "\" -filter:links"
+	query = url.QueryEscape(query)
+	responseString := makeAuthedRequest("GET", "1.1/search/tweets.json?q="+query+"&include_entities=false&lang=en&result_type=popular")
+
+	fmt.Println(string(responseString))
+
 	totallyTweets, _ := ioutil.ReadFile("corpus.txt")
 
 	tweets := strings.Split(string(totallyTweets), ".")
@@ -29,9 +37,8 @@ func GetTweets(trend string) []string {
 //
 func GetTrends() []string {
 	responseString := makeAuthedRequest("GET", "1.1/trends/place.json?id=1")
-
-	fmt.Println(responseString)
+	fmt.Println(string(responseString))
 
 	// would normally be fetched from twitter, just hardcoded for now
-	return []string{"anything", "at", "all"}
+	return []string{"nba", "dogs", "marvel"}
 }
