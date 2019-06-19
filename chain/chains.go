@@ -46,7 +46,7 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 		composedTweet := join(tweet...)
 		composedTweet = strings.Replace(composedTweet, debug, "", -1)
 
-		composedTweet = trend + ":\n\n" + composedTweet
+		composedTweet = trend + ":\n" + composedTweet
 
 		return composedTweet
 	}
