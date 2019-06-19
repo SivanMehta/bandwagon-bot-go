@@ -1,7 +1,7 @@
 package twitter
 
 import (
-	"fmt"
+	"encoding/json"
 	"io/ioutil"
 	"net/url"
 	"strings"
@@ -22,9 +22,8 @@ func GetTweets(trend string) []string {
 	// exactly containing the trend, without tweets that contain links
 	query := "\"" + trend + "\" -filter:links"
 	query = url.QueryEscape(query)
-	responseString := makeAuthedRequest("GET", "1.1/search/tweets.json?q="+query+"&include_entities=false&lang=en&result_type=popular")
-
-	fmt.Println(string(responseString))
+	// responseString := makeAuthedRequest("GET", "1.1/search/tweets.json?q="+query+"&include_entities=false&lang=en&result_type=popular")
+	// fmt.Println(string(responseString))
 
 	totallyTweets, _ := ioutil.ReadFile("corpus.txt")
 
@@ -33,12 +32,21 @@ func GetTweets(trend string) []string {
 }
 
 //
-// GetTrends goes to twitter and returns a list of trending topics in the US
+// GetTrends goes to twitter and returns a list of trending topics
+// the woeid of 2352824 hard codes this to the US
 //
 func GetTrends() []string {
-	responseString := makeAuthedRequest("GET", "1.1/trends/place.json?id=1")
-	fmt.Println(string(responseString))
+	responseBytes := makeAuthedRequest("GET", "1.1/trends/place.json?id=2352824")
 
-	// would normally be fetched from twitter, just hardcoded for now
-	return []string{"nba", "dogs", "marvel"}
+	var parsed trendResponse
+	json.Unmarshal(responseBytes, &parsed)
+
+	data := parsed[0].Trends
+	trends := make([]string, len(data))
+
+	for i := range data {
+		trends[i] = data[i].Name
+	}
+
+	return trends
 }
