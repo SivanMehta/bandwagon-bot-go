@@ -13,7 +13,7 @@ import (
 	"./twitter"
 )
 
-type HomePage struct {
+type homePage struct {
 	Trends []string
 }
 
@@ -30,9 +30,9 @@ func main() {
 	// so that they're available on server start
 	chain.MakeChains()
 
-	tmpl := template.Must(template.ParseFiles("public/index.html"))
+	tmpl := template.Must(template.ParseFiles("public/index.hbs"))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := HomePage{twitter.GetTrends()}
+		data := homePage{twitter.GetTrends()}
 		tmpl.Execute(w, data)
 	})
 
