@@ -11,19 +11,8 @@ var token = ""
 var secret = ""
 var currentTrends []string
 
-//
-// GetTweets will return a body of text from trending topics
-// This is currently just the text of the Declaration of Independence, but stay tuned.
-//
-func GetTweets(trend string) []string {
-	// exactly containing the trend, without tweets that contain links
-	query := trend + " -filter:links"
-	query = url.QueryEscape(query)
-	responseBytes := makeAuthedRequest("GET", "1.1/search/tweets.json?q="+query+"&include_entities=false&lang=en&result_type=popular")
-
-	var parsed tweetsResponse
-	json.Unmarshal(responseBytes, &parsed)
-	data := parsed.Statuses
+func extractTweetsfromResponse(response tweetsResponse) []string {
+	data := response.Statuses
 	tweets := make([]string, len(data))
 
 	for i := range data {
@@ -33,12 +22,50 @@ func GetTweets(trend string) []string {
 	return tweets
 }
 
+func getNextTweets(nextURL string, n int, topic string) []string {
+	if n < 0 {
+		return []string{}
+	}
+
+	responseBytes := makeAuthedRequest("GET", "1.1/search/tweets.json"+nextURL)
+
+	var parsed tweetsResponse
+	json.Unmarshal(responseBytes, &parsed)
+	tweets := extractTweetsfromResponse(parsed)
+	if len(tweets) == 0 {
+		return []string{}
+	}
+
+	nextPage := parsed.Search_metadata.Next_results
+	return append(tweets, getNextTweets(nextPage, n-len(tweets), topic)...)
+}
+
+//
+// GetTweets will return a body of text from trending topics
+// This is currently just the text of the Declaration of Independence, but stay tuned.
+//
+func GetTweets(trend string) []string {
+	// exactly containing the trend, without tweets that contain links
+	query := url.QueryEscape(trend)
+	n := 100
+	responseBytes := makeAuthedRequest("GET", "1.1/search/tweets.json?q="+query+"&include_entities=false&lang=en&result_type=popular&count="+string(n))
+
+	var parsed tweetsResponse
+	json.Unmarshal(responseBytes, &parsed)
+	tweets := extractTweetsfromResponse(parsed)
+
+	nextTweets := getNextTweets(parsed.Search_metadata.Next_results, n-len(tweets), trend)
+	tweets = append(tweets, nextTweets...)
+
+	return tweets
+}
+
 //
 // FetchTrends goes to twitter and returns a list of the top 5 trending topics
-// the woeid of 2352824 hard codes this to the US
+// the woeid of 2459115 hard codes this to the New York
 //
 func FetchTrends() []string {
-	responseBytes := makeAuthedRequest("GET", "1.1/trends/place.json?id=2352824")
+	responseBytes := makeAuthedRequest("GET", "1.1/trends/place.json?id=2459115")
 
 	var parsed trendResponse
 	json.Unmarshal(responseBytes, &parsed)

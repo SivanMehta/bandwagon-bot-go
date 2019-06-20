@@ -8,9 +8,6 @@ import (
 	"../twitter"
 )
 
-// Character limit for tweets
-const limit = 240
-
 func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 	tweets := twitter.GetTweets(trend)
 	dictionary := buildDictionary(tweets)
@@ -24,6 +21,11 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 		tweet := []string{startingPair.First + " ", startingPair.Second}
 		length := len(tweet[0]) + len(tweet[1])
 		currentKey := startingPair
+
+		limit := 240 - 2 - len(trend)
+		//                ^^^^^^^^^^ the trend itself
+		//            ^ colon and space
+		//      ^^^ character limit for tweets
 
 		for true {
 			if candidates, ok := dictionary[currentKey]; ok {
@@ -46,6 +48,8 @@ func createGenerator(trend string, pointer *bandwagon, pool *sync.WaitGroup) {
 
 		composedTweet := join(tweet...)
 		composedTweet = strings.Replace(composedTweet, debug, "", -1)
+		composedTweet = strings.Split(composedTweet, "https://t.co")[0]
+		composedTweet = trend + ": " + composedTweet
 
 		return composedTweet
 	}

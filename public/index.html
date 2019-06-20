@@ -27,7 +27,8 @@
         fetch('/api/' + encodeURIComponent(topic))
           .then(res => res.text())
           .then(tweet => {
-            tweetContainer.innerHTML = tweet;
+            const content = tweet.split(topic + ': ').slice(1).join("")
+            tweetContainer.innerHTML = content;
           });
       }
     </script>
