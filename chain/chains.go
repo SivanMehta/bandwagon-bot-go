@@ -86,7 +86,10 @@ func MakeChains() {
 	// reset what bandwagon we're currently on
 	currentBandwagons = upcomingBandwagons
 
-	// post a tweet for each trend
+	for _, trend := range trends {
+		tweet := currentBandwagons[trend]()
+		twitter.Tweet(tweet)
+	}
 }
 
 //

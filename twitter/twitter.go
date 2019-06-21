@@ -3,6 +3,7 @@ package twitter
 import (
 	"encoding/json"
 	"net/url"
+	"fmt"
 	"sort"
 )
 
@@ -10,35 +11,6 @@ var accessToken = ""
 var token = ""
 var secret = ""
 var currentTrends []string
-
-func extractTweetsfromResponse(response tweetsResponse) []string {
-	data := response.Statuses
-	tweets := make([]string, len(data))
-
-	for i := range data {
-		tweets[i] = data[i].Text
-	}
-
-	return tweets
-}
-
-func getNextTweets(nextURL string, n int, topic string) []string {
-	if n < 0 {
-		return []string{}
-	}
-
-	responseBytes := makeAuthedRequest("GET", "1.1/search/tweets.json"+nextURL)
-
-	var parsed tweetsResponse
-	json.Unmarshal(responseBytes, &parsed)
-	tweets := extractTweetsfromResponse(parsed)
-	if len(tweets) == 0 {
-		return []string{}
-	}
-
-	nextPage := parsed.Search_metadata.Next_results
-	return append(tweets, getNextTweets(nextPage, n-len(tweets), topic)...)
-}
 
 //
 // GetTweets will return a body of text from trending topics
@@ -92,4 +64,14 @@ func FetchTrends() []string {
 //
 func GetTrends() []string {
 	return currentTrends
+}
+
+//
+// Tweet post a tweet to the Twitter
+///
+func Tweet(tweet string) {
+	tweet = url.QueryEscape(tweet)
+	// responseBytes := makeAuthedRequest("POST", "1.1/statuses/update.json?status=" + tweet)
+
+	fmt.Println(tweet)
 }
